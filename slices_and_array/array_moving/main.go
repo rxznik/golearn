@@ -6,7 +6,7 @@ import (
 )
 
 func allocation(index int) byte {
-	//// стек в Go равен 8 KB, придётся увеличивать стек
+	/// стек в Go равен 8 KB, придётся увеличивать стек
 	var data [1 << 20]byte // 1 MB, т.к. 2^20 / 1024^2 = 1 MB
 	return data[index]
 }

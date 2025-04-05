@@ -11,7 +11,7 @@ func main() {
 	var arrayWithStack [128 << 10]int8 // 128 KB
 	_ = arrayWithStack
 
-	var arrayWithHeap [12 << 20]int8 // 12 MB // moved to heap
+	var arrayWithHeap [(128 << 10) + 1]int8 // 128 KB + 1 byte // moved to heap
 	_ = arrayWithHeap
 
 	arrayWithHeap2 := allocation() // in heap
