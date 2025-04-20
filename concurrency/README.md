@@ -42,7 +42,7 @@ func infiniteLoop() {
 
 ```go
 // Пример работы P
-runtime.GOMAXPROCS(4) // 4 P создадут 4 системных потока
+runtime.GOMAXPROCS(4) // 4 P создадут 5 системных потоков
 ```
 
 ### Механизмы
@@ -217,8 +217,6 @@ atomic.AddInt32(&counter, 1)
 ### SingleFlight (golang.org/x/sync/singleflight)
 - **Цель**: Предотвращение повторных вычислений для одинаковых запросов.
 - **Принцип**: Группировка одновременных вызовов с одним ключом.
-- **Плюсы**: Экономия ресурсов.
-- **Минусы**: Риск задержек при медленном первом вызове.
 
 ```go
 var group singleflight.Group
@@ -226,46 +224,42 @@ result, _ := group.Do("key", func() (interface{}, error) {
     return fetchFromDB()
 })
 ```
+[Реализация](https://github.com/rxznik/golearn/blob/main/concurrency/balun/channels/singleflight/main.go)
 
 ### RateLimiter (golang.org/x/time/rate)
 - **Цель**: Ограничение частоты запросов (например, API).
 - **Принцип**: Токенный алгоритм (token bucket).
-- **Плюсы**: Гибкие настройки (burst, rate).
-- **Минусы**: Нет распределенного лимита.
 
 ```go
 limiter := rate.NewLimiter(rate.Every(100*time.Millisecond), 5)
 if limiter.Allow() { /* Выполнить */ }
 ```
+[Реализация](https://github.com/rxznik/golearn/blob/main/concurrency/balun/channels/rate_limiter/main.go)
 
 ### ErrGroup (golang.org/x/sync/errgroup)
 - **Цель**: Группа горутин с обработкой ошибок.
 - **Принцип**: Отмена всех задач при первой ошибке.
-- **Плюсы**: Упрощение управления ошибками.
-- **Минусы**: Нет контроля за количеством горутин.
 
 ```go
 g, ctx := errgroup.WithContext(ctx)
 g.Go(func() error { return nil })
 if err := g.Wait(); err != nil {}
 ```
+[Реализация](https://github.com/rxznik/golearn/blob/main/concurrency/balun/channels/errgroup/main.go)
 
 ### Семафор (реализация через каналы)
 - **Цель**: Ограничение одновременных операций.
-- **Плюсы**: Простая реализация.
-- **Минусы**: Нет продвинутых функций (таймауты).
 
 ```go
 sem := make(chan struct{}, 3)
 sem <- struct{}{} // Захват
 <-sem             // Освобождение
 ```
+[Реализация](https://github.com/rxznik/golearn/blob/main/concurrency/balun/channels/semaphore/main.go)
 
 ### WorkerPool
 - **Цель**: Пул воркеров для обработки задач.
 - **Принцип**: Фиксированное количество горутин + канал задач.
-- **Плюсы**: Контроль нагрузки.
-- **Минусы**: Настройка размера пула.
 
 ```go
 jobs := make(chan Task, 100)
@@ -273,6 +267,7 @@ for i := 0; i < 10; i++ {
     go func() { for task := range jobs { process(task) } }()
 }
 ```
+[Реализация](https://github.com/rxznik/golearn/blob/main/concurrency/habr/workerpool/main.go)
 </details>
 
 <details>
@@ -316,6 +311,7 @@ func fanOut(input <-chan int, workers int) {
     }
 }
 ```
+[Реализация](https://github.com/rxznik/golearn/blob/main/concurrency/balun/channels/fan-out/main.go)
 
 ### Fan-in
 - **Цель**: Объединение результатов из нескольких каналов.
@@ -330,6 +326,7 @@ func fanIn(inputs ...<-chan int) <-chan int {
     return out
 }
 ```
+[Реализация](https://github.com/rxznik/golearn/blob/main/concurrency/balun/channels/fan-in/main.go)
 
 ### Tee
 - **Цель**: Разделение данных на два канала.
@@ -346,4 +343,5 @@ func tee(input <-chan int) (_, _ <-chan int) {
     return out1, out2
 }
 ```
+[Реализация](https://github.com/rxznik/golearn/blob/main/concurrency/balun/channels/tee/main.go)
 </details>
