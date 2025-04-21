@@ -15,12 +15,12 @@ import (
 func TestGetTodayWeather(t *testing.T) {
 	testCases := []struct {
 		name    string
-		resp    *response.Response
+		resp    *response.WeatherResponse
 		mockErr error
 	}{
 		{
 			name: "Success",
-			resp: &response.Response{
+			resp: &response.WeatherResponse{
 				OK: &response.WeatherOK{
 					Hourly: &response.HourlyData{
 						Time: []string{"1", "2", "3"},
@@ -32,8 +32,8 @@ func TestGetTodayWeather(t *testing.T) {
 		},
 		{
 			name: "Error response from api",
-			resp: &response.Response{
-				Error: response.ResponseError{
+			resp: &response.WeatherResponse{
+				Error: &response.ResponseError{
 					Error:  "Error code 1488",
 					Reason: "Some reason",
 				},
@@ -48,20 +48,27 @@ func TestGetTodayWeather(t *testing.T) {
 	}
 
 	logger := zap.NewNop()
+	defer logger.Sync()
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
+			t.Parallel()
+
 			weatherClientMock := mocks.NewWeatherClient(t)
 			weatherClientMock.
 				On("GetWeatherData", logger, 1.0, 2.0).
-				Return(tc.resp, tc.mockErr)
+				Return(tc.resp, tc.mockErr).
+				Once()
 
 			resTime, resTemp, err := weather.GetTodayWeather(logger, weatherClientMock, 1.0, 2.0)
 
-			assert.Equal(t, tc.mockErr, err)
+			if tc.resp == nil {
+				assert.Equal(t, tc.mockErr, err)
+				return
+			}
 
-			if tc.resp.Error.Error != "" {
+			if tc.resp.Error != nil {
 				errorString := tc.resp.Error.Error + ": " + tc.resp.Error.Reason
 				t.Logf("\x1b[33mexpected error %s, got %s\x1b[0m", errorString, err.Error())
 				assert.Equal(t, errorString, err.Error())
@@ -71,12 +78,14 @@ func TestGetTodayWeather(t *testing.T) {
 				t.Errorf("expected resTime and resTemp to be nil, got %v & %v", resTime, resTemp)
 			}
 
-			if tc.mockErr != nil && tc.resp.Error.Error != "" {
+			if tc.mockErr != nil || tc.resp.Error != nil {
 				return
 			}
 
-			assert.Equal(t, tc.resp.OK.(response.WeatherOK).Hourly.Time, resTime)
-			assert.Equal(t, tc.resp.OK.(response.WeatherOK).Hourly.Temp, resTemp)
+			assert.NotNil(t, resTime)
+			assert.NotNil(t, resTemp)
+			assert.Equal(t, tc.resp.OK.Hourly.Time, resTime)
+			assert.Equal(t, tc.resp.OK.Hourly.Temp, resTemp)
 		})
 
 	}

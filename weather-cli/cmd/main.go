@@ -22,8 +22,18 @@ func main() {
 	action := action.NewAction(client, logger)
 	app := &cli.App{
 		Name:   "weather-cli",
-		Usage:  "get weather by city name (e.g. weather-cli Москва)",
+		Usage:  "Получает погоду по названию города (e.g. weather-cli Москва)",
 		Action: action.Pipeline,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "loud",
+				Aliases: []string{"l"},
+				Value:   "false",
+				Usage:   "показать логи (true, false)",
+			},
+		},
+		Args:      true,
+		ArgsUsage: "city name",
 	}
 
 	logger.Debug("starting app")

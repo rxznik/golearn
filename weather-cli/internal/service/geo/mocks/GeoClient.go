@@ -4,9 +4,7 @@ package mocks
 
 import (
 	response "github.com/rxznik/golearn/weather-cli/internal/response"
-
 	mock "github.com/stretchr/testify/mock"
-
 	zap "go.uber.org/zap"
 )
 
@@ -16,23 +14,23 @@ type GeoClient struct {
 }
 
 // GetGeoData provides a mock function with given fields: logger, city
-func (_m *GeoClient) GetGeoData(logger *zap.Logger, city string) (*response.Response, error) {
+func (_m *GeoClient) GetGeoData(logger *zap.Logger, city string) (*response.GeoResponse, error) {
 	ret := _m.Called(logger, city)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetGeoData")
 	}
 
-	var r0 *response.Response
+	var r0 *response.GeoResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*zap.Logger, string) (*response.Response, error)); ok {
+	if rf, ok := ret.Get(0).(func(*zap.Logger, string) (*response.GeoResponse, error)); ok {
 		return rf(logger, city)
 	}
-	if rf, ok := ret.Get(0).(func(*zap.Logger, string) *response.Response); ok {
+	if rf, ok := ret.Get(0).(func(*zap.Logger, string) *response.GeoResponse); ok {
 		r0 = rf(logger, city)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*response.Response)
+			r0 = ret.Get(0).(*response.GeoResponse)
 		}
 	}
 

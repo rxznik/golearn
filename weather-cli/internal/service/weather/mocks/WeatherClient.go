@@ -4,7 +4,6 @@ package mocks
 
 import (
 	response "github.com/rxznik/golearn/weather-cli/internal/response"
-
 	mock "github.com/stretchr/testify/mock"
 
 	zap "go.uber.org/zap"
@@ -16,23 +15,23 @@ type WeatherClient struct {
 }
 
 // GetWeatherData provides a mock function with given fields: logger, lat, lon
-func (_m *WeatherClient) GetWeatherData(logger *zap.Logger, lat float64, lon float64) (*response.Response, error) {
+func (_m *WeatherClient) GetWeatherData(logger *zap.Logger, lat float64, lon float64) (*response.WeatherResponse, error) {
 	ret := _m.Called(logger, lat, lon)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetWeatherData")
 	}
 
-	var r0 *response.Response
+	var r0 *response.WeatherResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*zap.Logger, float64, float64) (*response.Response, error)); ok {
+	if rf, ok := ret.Get(0).(func(*zap.Logger, float64, float64) (*response.WeatherResponse, error)); ok {
 		return rf(logger, lat, lon)
 	}
-	if rf, ok := ret.Get(0).(func(*zap.Logger, float64, float64) *response.Response); ok {
+	if rf, ok := ret.Get(0).(func(*zap.Logger, float64, float64) *response.WeatherResponse); ok {
 		r0 = rf(logger, lat, lon)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*response.Response)
+			r0 = ret.Get(0).(*response.WeatherResponse)
 		}
 	}
 
