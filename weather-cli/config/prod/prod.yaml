@@ -1,0 +1,10 @@
+env: "prod"
+client:
+  timeout: 5s
+  weather:
+    weather_url: "https://api.open-meteo.com/v1"
+    hourly: "temperature_2m"
+    forecast_days: 1
+  geo:
+    geo_url: "https://geocoding-api.open-meteo.com/v1"
+    language: "ru"
