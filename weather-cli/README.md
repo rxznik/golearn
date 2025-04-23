@@ -154,6 +154,8 @@ docker run --rm rxznik/weather-cli:latest -l true Москва
 
 </details>
 
+<br/>
+
 ### Использование
 
 *Получить справочную информацию*:
