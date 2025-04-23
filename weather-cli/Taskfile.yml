@@ -1,0 +1,50 @@
+version: '3'
+
+vars:
+  BIN_NAME: "main{{exeExt}}"
+  BIN_DIR: "bin"
+  IMAGE_NAME: "rxznik/weather-cli:latest"
+  DOCKERFILE: "./build/Dockerfile"
+
+tasks:
+  download:
+    desc: "Download dependencies"
+    cmds:
+      - go mod download
+
+  build:
+    desc: "Build binary"
+    cmds:
+      - go build -ldflags "-s -w" -o ./{{.BIN_DIR}}/{{.BIN_NAME}} ./cmd/main.go
+
+  build-docker:
+    desc: "Build docker image"
+    cmds:
+      - docker build -t {{.IMAGE_NAME}} -f {{.DOCKERFILE}} .
+
+  push-docker:
+    desc: "Push docker image"
+    cmds:
+      - docker push {{.IMAGE_NAME}}
+
+  run:
+    desc: "Run binary"
+    deps: [build]
+    cmds:
+      - ./{{.BIN_DIR}}/{{.BIN_NAME}} {{.CLI_ARGS}}
+
+  run-dev:
+    desc: "Run without build"
+    cmds:
+      - go run ./cmd/main.go {{.CLI_ARGS}}
+
+  clean:
+    desc: "Clean binary"
+    cmds:
+      - rm -r {{.BIN_DIR}}
+
+  test-service:
+    desc: "Run service tests"
+    cmds:
+      - go test -v ./internal/service/geo/
+      - go test -v ./internal/service/weather/

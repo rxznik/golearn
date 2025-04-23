@@ -33,7 +33,7 @@ func (ac *Action) Pipeline(ctx *cli.Context) error {
 	if city == "" {
 		return errors.New("expected 1 args (city name) but got 0")
 	}
-   
+
 	ac.logger.Info("got city", zap.String("city", city))
 
 	now := time.Now().Local()
@@ -58,6 +58,8 @@ func (ac *Action) Pipeline(ctx *cli.Context) error {
 
 	fmt.Println("time\ttemp °С\n---------------")
 
+	var currentTemp float64
+
 	for i, timeStr := range times {
 		time, err := time.Parse(timeLayout, timeStr)
 		if err != nil {
@@ -69,8 +71,19 @@ func (ac *Action) Pipeline(ctx *cli.Context) error {
 		if localTime.Hour() < now.Hour() {
 			continue
 		}
-		timePretty := localTime.Format("15:04")
-		fmt.Printf("\x1b[36m%s\t\x1b[33m%.2f°C\x1b[0m\n", timePretty, temps[i])
+
+		if localTime.Hour() == now.Hour() {
+			currentTemp = temps[i]
+		}
+
+		timePretty := fmt.Sprintf("\x1b[36m%s\x1b[0m", localTime.Format("15:04"))
+		var tempPretty string
+		if temps[i] > currentTemp {
+			tempPretty = fmt.Sprintf("\x1b[31m%.2f°C\x1b[0m", temps[i])
+		} else {
+			tempPretty = fmt.Sprintf("\x1b[33m%.2f°C\x1b[0m", temps[i])
+		}
+		fmt.Printf("%s\t%s\n", timePretty, tempPretty)
 	}
 
 	return nil
