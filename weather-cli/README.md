@@ -46,6 +46,51 @@ go run cmd/main.go -l true Москва
 <br/>
 
 <details>
+<summary><strong>🧰 By Git + Task</strong></summary>
+
+<br/>
+
+*Клонируем репозиторий*:
+
+```bash
+git clone https://github.com/rxznik/golearn.git
+```
+
+*Переходим в директорию проекта*:
+
+```bash
+cd golearn/weather-cli
+```
+
+*Устанавливаем зависимости*:
+
+```bash
+task download
+```
+
+*Собираем приложение*:
+
+```bash
+task build
+```
+
+*Запускаем приложение*:
+
+```bash
+task run -- --help
+```
+
+*Пример получения погоды в Москве с включенным логированием*:
+
+```bash
+task run -- -l true Москва
+```
+
+</details>
+
+<br/>
+
+<details>
 <summary><strong>📦 By Git + Docker</strong></summary>
 
 <br/>
